@@ -34,7 +34,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -43,7 +43,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -121,7 +121,175 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: openclose_grill_0
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 276
+        width: 316
+        height: 234
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a2819eda90c4f954a94de17fc0e4d6f2
+      internalID: -1067384003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: openclose_grill_1
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 7
+        width: 316
+        height: 268
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ad946bed0f119224d9b7f0a755f8eecf
+      internalID: 554782318
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: openclose_grill_2
+      rect:
+        serializedVersion: 2
+        x: 319
+        y: 404
+        width: 60
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: df1a1a4c2f5f51b429a14fb537279dc5
+      internalID: -1781911958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: openclose_grill_3
+      rect:
+        serializedVersion: 2
+        x: 381
+        y: 404
+        width: 60
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e7166dec46ef8394782ec2a1c7b15d6f
+      internalID: 812665093
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: openclose_grill_4
+      rect:
+        serializedVersion: 2
+        x: 319
+        y: 225
+        width: 70
+        height: 177
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fafbbf93553d9b84294b5dd315b2b322
+      internalID: 591450989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: openclose_grill_5
+      rect:
+        serializedVersion: 2
+        x: 391
+        y: 225
+        width: 70
+        height: 177
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 761fbf450afd3a84d8580f59c643e910
+      internalID: -1131289530
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: openclose_grill_6
+      rect:
+        serializedVersion: 2
+        x: 319
+        y: 8
+        width: 74
+        height: 215
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f6c7ef482ee838b4badfaa2a93185399
+      internalID: -1831556713
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: openclose_grill_7
+      rect:
+        serializedVersion: 2
+        x: 395
+        y: 8
+        width: 76
+        height: 182
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dc6e4f37398f0be479b61c52d679308e
+      internalID: 1974322572
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -132,7 +300,15 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      openclose_grill_0: -1067384003
+      openclose_grill_1: 554782318
+      openclose_grill_2: -1781911958
+      openclose_grill_3: 812665093
+      openclose_grill_4: 591450989
+      openclose_grill_5: -1131289530
+      openclose_grill_6: -1831556713
+      openclose_grill_7: 1974322572
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
