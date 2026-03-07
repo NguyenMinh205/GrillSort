@@ -2,10 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class DragDropController : MonoBehaviour
 {
     [SerializeField] private Image _imgFood;
+    [SerializeField] private float _durationTransition = 0.25f;
 
     private SlotFood _currentSlot, _tempSlot;
     private bool _isDragging;
@@ -38,22 +40,87 @@ public class DragDropController : MonoBehaviour
             _imgFood.transform.position = foodPos;
 
             SlotFood targetSlot = Utils.GetRayCast<SlotFood>(Input.mousePosition);
-            if (targetSlot != null && targetSlot.IsEmpty() && targetSlot.GetInstanceID() != _tempSlot.GetInstanceID())
+            if (targetSlot != null)
             {
-                _tempSlot.OnHideFood();
-                _tempSlot = targetSlot;
-                _tempSlot.OnSetFood(_currentSlot.ImageFood.sprite);
-                _tempSlot.OnFadeFood();
+                if (targetSlot.IsEmpty())
+                {
+                    if (_tempSlot != null)
+                    {
+                        if (targetSlot.GetInstanceID() != _tempSlot.GetInstanceID())
+                        {
+                            _tempSlot.OnHideFood();
+                            _tempSlot = targetSlot;
+                            _tempSlot.OnSetFood(_currentSlot.ImageFood.sprite);
+                            _tempSlot.OnFadeFood();
+                        }
+                    }
+                    else
+                    {
+                        _tempSlot = targetSlot;
+                        _tempSlot.OnSetFood(_currentSlot.ImageFood.sprite);
+                        _tempSlot.OnFadeFood();
+                    }
+                }
+                else
+                {
+                    SlotFood emptySlot = targetSlot.GetSlotNull;
+                    if (emptySlot != null && emptySlot.GetInstanceID() != _tempSlot.GetInstanceID())
+                    {
+                        _tempSlot.OnHideFood();
+                        _tempSlot = emptySlot;
+                        _tempSlot.OnSetFood(_currentSlot.ImageFood.sprite);
+                        _tempSlot.OnFadeFood();
+                    }
+                }
+            }
+            else
+            {
+                OnClearTempSlot();
             }
         }
 
         if (Input.GetMouseButtonUp(0) && _isDragging)
         {
-            _tempSlot.OnHideFood();
-            _currentSlot.OnActiveFood(true);
+            if (_tempSlot != null && _tempSlot.GetInstanceID() != _currentSlot.GetInstanceID())
+            {
+                _imgFood.transform.DOMove(_tempSlot.transform.position, _durationTransition).OnComplete(() => {
+                    _tempSlot.OnSetFood(_currentSlot.ImageFood.sprite);
+                    _tempSlot.OnActiveFood(true);
+
+                    _currentSlot.OnClearSlot();
+
+                    _tempSlot.GrillCtrl.OnCheckDoneGrill();
+
+                    _tempSlot = null;
+                    _currentSlot = null;
+                    _imgFood.gameObject.SetActive(false);
+                    _imgFood.sprite = null;
+                });
+            }
+            else
+            {
+                _imgFood.transform.DOMove(_currentSlot.transform.position, _durationTransition).OnComplete(() => {
+                    _currentSlot.OnActiveFood(true);
+                    OnClearTempSlot();
+                    _imgFood.gameObject.SetActive(false);
+                    _imgFood.sprite = null;
+                    _currentSlot = null;
+                });
+            }
+
             _isDragging = false;
-            _imgFood.gameObject.SetActive(false);
-            _imgFood.sprite = null;
+        }
+    }
+
+    public void OnClearTempSlot()
+    {
+        if (_tempSlot != null && _currentSlot != null)
+        {
+            if (_currentSlot.GetInstanceID() != _tempSlot.GetInstanceID())
+            {
+                _tempSlot.OnHideFood();
+                _tempSlot = null;
+            }
         }
     }
 }

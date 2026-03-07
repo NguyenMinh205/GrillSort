@@ -6,6 +6,8 @@ using UnityEngine.UI;
 public class SlotFood : MonoBehaviour
 {
     [SerializeField] private Image _imageFood;
+    [SerializeField] private Grill _grillCtrl;
+    public Grill GrillCtrl => _grillCtrl;
 
     private Color _defaultColor = new Color(1f, 1f, 1f, 1f);
     private Color _fadeColor = new Color(1f, 1f, 1f, 0.5f);
@@ -16,16 +18,20 @@ public class SlotFood : MonoBehaviour
         _imageFood.sprite = sprite;
         _imageFood.gameObject.SetActive(true);
         _imageFood.enabled = true;
+
+        _imageFood.transform.localPosition = Vector3.zero;
+        _imageFood.transform.localScale = Vector3.one;
     }
 
     public bool IsEmpty()
     {
-        return _imageFood.enabled == false;
+        return _imageFood.enabled == false || _imageFood.color != _defaultColor;
     }
 
     public void OnActiveFood(bool active)
     {
         _imageFood.enabled = active;
+        _imageFood.color = _defaultColor;
     }
 
     public void OnFadeFood()
@@ -40,7 +46,9 @@ public class SlotFood : MonoBehaviour
         _imageFood.color = _defaultColor;
     }
 
-     public void OnClearSlot()
+    public SlotFood GetSlotNull => _grillCtrl.GetSlotNull();
+
+    public void OnClearSlot()
     {
         _imageFood.sprite = null;
         _imageFood.enabled = false;

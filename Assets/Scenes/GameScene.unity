@@ -3674,6 +3674,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _imgFood: {fileID: 87977850}
+  _durationTransition: 0.25
 --- !u!1 &2073725525
 GameObject:
   m_ObjectHideFlags: 0
@@ -3980,14 +3981,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 540933138263607850, guid: aa3908aea6922ad47841af460cd32dd9, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 898931923840730052, guid: aa3908aea6922ad47841af460cd32dd9, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2328104616555400721, guid: aa3908aea6922ad47841af460cd32dd9, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -4068,10 +4061,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2733784723704052010, guid: aa3908aea6922ad47841af460cd32dd9, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2861618493143446287, guid: aa3908aea6922ad47841af460cd32dd9, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -4088,10 +4077,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4973003660921483037, guid: aa3908aea6922ad47841af460cd32dd9, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5135634199301399864, guid: aa3908aea6922ad47841af460cd32dd9, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -4106,18 +4091,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5135634199301399864, guid: aa3908aea6922ad47841af460cd32dd9, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5691365187757057779, guid: aa3908aea6922ad47841af460cd32dd9, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7821159437619222003, guid: aa3908aea6922ad47841af460cd32dd9, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8589730281304760244, guid: aa3908aea6922ad47841af460cd32dd9, type: 3}
-      propertyPath: m_Color.a
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
