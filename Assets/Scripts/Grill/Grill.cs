@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -30,13 +30,32 @@ public class Grill : MonoBehaviour
 
         while (listFood.Count > 0)
         {
-            int randomPlateIndex = Random.Range(0, _listFoodForPlate.Count);
-            if (_listFoodForPlate[randomPlateIndex].Count >= 3) continue;
+            List<int> availablePlates = new List<int>();
+            for (int i = 0; i < _listFoodForPlate.Count; i++)
+            {
+                if (_listFoodForPlate[i].Count < 3)
+                {
+                    availablePlates.Add(i);
+                }
+            }
+
+            if (availablePlates.Count == 0)
+            {
+                break;
+            }
+
+            int randomAvailableIndex = Random.Range(0, availablePlates.Count);
+            int targetPlateIndex = availablePlates[randomAvailableIndex];
+
             int randomFoodIndex = Random.Range(0, listFood.Count);
-            _listFoodForPlate[randomPlateIndex].Add(listFood[randomFoodIndex]);
+            _listFoodForPlate[targetPlateIndex].Add(listFood[randomFoodIndex]);
             listFood.RemoveAt(randomFoodIndex);
         }
 
-        _plate.OnSetListFood(_listFoodForPlate[0]);
+        if (_listFoodForPlate.Count > 0)
+        {
+            _plate.OnSetListFood(_listFoodForPlate[0]);
+        }
+        Debug.Log(_listFoodForPlate.Count);
     }    
 }
