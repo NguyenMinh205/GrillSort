@@ -83,48 +83,66 @@ public class Grill : MonoBehaviour
             }
 
             clearSeq.OnComplete(() => {
-                OnClearGrill();
-
-                foreach (var slot in _slotFoods)
-                {
-                    slot.ImageFood.transform.localScale = Vector3.one;
-                }
-
-                if (_listFoodForPlate != null && _listFoodForPlate.Count > 0)
-                {
-                    List<Sprite> nextFood = _listFoodForPlate[0];
-                    _listFoodForPlate.RemoveAt(0);
-
-                    Sequence moveSeq = DOTween.Sequence();
-
-                    for (int i = 0; i < nextFood.Count; i++)
-                    {
-                        _slotFoods[i].OnSetFood(nextFood[i]);
-                        Transform foodTrans = _slotFoods[i].ImageFood.transform;
-
-                        foodTrans.position = _plate.GetFoodPosition(i);
-
-                        moveSeq.Join(foodTrans.DOLocalMove(Vector3.zero, 0.35f).SetEase(Ease.OutQuad));
-                    }
-
-                    moveSeq.OnComplete(() => {
-                        if (_listFoodForPlate.Count > 0)
-                        {
-                            _plate.OnSetListFood(_listFoodForPlate[0]);
-                            _plate.AnimateShowNextFood(0.3f);
-                        }
-                        else
-                        {
-                            _plate.OnClearPlate();
-                            _plate.gameObject.SetActive(false);
-                        }
-
-                        OnCheckDoneGrill();
-                    });
-                }
+                OnFillGrill();
             });
         }
     }
+
+    public void OnCheckEmptyGrill()
+    {
+        for (int i = 0; i < _slotFoods.Count; i++)
+        {
+            if (!_slotFoods[i].IsEmpty())
+            {
+                return;
+            }
+        }
+
+        OnFillGrill();
+    }
+
+    public void OnFillGrill()
+    {
+        OnClearGrill();
+
+        foreach (var slot in _slotFoods)
+        {
+            slot.ImageFood.transform.localScale = Vector3.one;
+        }
+
+        if (_listFoodForPlate != null && _listFoodForPlate.Count > 0)
+        {
+            List<Sprite> nextFood = _listFoodForPlate[0];
+            _listFoodForPlate.RemoveAt(0);
+
+            Sequence moveSeq = DOTween.Sequence();
+
+            for (int i = 0; i < nextFood.Count; i++)
+            {
+                _slotFoods[i].OnSetFood(nextFood[i]);
+                Transform foodTrans = _slotFoods[i].ImageFood.transform;
+
+                foodTrans.position = _plate.GetFoodPosition(i);
+
+                moveSeq.Join(foodTrans.DOLocalMove(Vector3.zero, 0.35f).SetEase(Ease.OutQuad));
+            }
+
+            moveSeq.OnComplete(() => {
+                if (_listFoodForPlate.Count > 0)
+                {
+                    _plate.OnSetListFood(_listFoodForPlate[0]);
+                    _plate.AnimateShowNextFood(0.3f);
+                }
+                else
+                {
+                    _plate.OnClearPlate();
+                    _plate.gameObject.SetActive(false);
+                }
+
+                OnCheckDoneGrill();
+            });
+        }
+    }    
 
     public void OnClearGrill()
     {

@@ -88,6 +88,7 @@ public class DragDropController : MonoBehaviour
                     _tempSlot.OnActiveFood(true);
 
                     _currentSlot.OnClearSlot();
+                    _currentSlot.GrillCtrl.OnCheckEmptyGrill();
 
                     _tempSlot.GrillCtrl.OnCheckDoneGrill();
 
