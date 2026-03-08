@@ -782,9 +782,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf227291895b22f48a4082030bb38c30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _uiManager: {fileID: 1752332613}
+  _audioManager: {fileID: 593837134}
   _totalTypeOfFood: 18
   _totalGrill: 9
-  _totalMeals: 0
   _listGrill:
   - {fileID: 567758072477465886}
   - {fileID: 903185707}
@@ -3079,6 +3080,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85f23dada144af44e805b85f45fa28e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _panelWin: {fileID: 0}
+  _panelLose: {fileID: 0}
+  _txtTimer: {fileID: 1321372579}
+  _durationTimer: 180
+  _txtMealFinish: {fileID: 1839352691}
+  _timeToWaitHint: 5
 --- !u!1 &1839352689
 GameObject:
   m_ObjectHideFlags: 0

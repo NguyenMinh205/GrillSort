@@ -75,6 +75,8 @@ public class Grill : MonoBehaviour
     {
         if (IsDoneGrill())
         {
+            ObserverManager<GameEvent>.PostEvent(GameEvent.OnDoneGrill);
+
             Sequence clearSeq = DOTween.Sequence();
 
             foreach (var slot in _slotFoods)
@@ -142,7 +144,7 @@ public class Grill : MonoBehaviour
                 OnCheckDoneGrill();
             });
         }
-    }    
+    }
 
     public void OnClearGrill()
     {
@@ -166,6 +168,34 @@ public class Grill : MonoBehaviour
             {
                 return false;
             }
+        }
+        return true;
+    }
+
+    public List<SlotFood> GetFilledSlots()
+    {
+        List<SlotFood> filledSlots = new List<SlotFood>();
+        foreach (var slot in _slotFoods)
+        {
+            if (!slot.IsEmpty()) filledSlots.Add(slot);
+        }
+        return filledSlots;
+    }
+
+    public bool HasFood(Sprite sprite)
+    {
+        foreach (var slot in _slotFoods)
+        {
+            if (!slot.IsEmpty() && slot.ImageFood.sprite == sprite) return true;
+        }
+        return false;
+    }
+
+    public bool IsCompletelyEmpty()
+    {
+        foreach (var slot in _slotFoods)
+        {
+            if (!slot.IsEmpty()) return false;
         }
         return true;
     }

@@ -5,17 +5,37 @@ using System.Linq;
 
 public class GameManager : Singleton<GameManager>
 {
+    [Header("Manager")]
+    [SerializeField] private UIManager _uiManager;
+    [SerializeField] private AudioManager _audioManager;
+
     [SerializeField] private int _totalTypeOfFood;
     [SerializeField] private int _totalGrill;
-    [SerializeField] private int _totalMeals;
+    public int TotalMeals => _totalTypeOfFood;
     [SerializeField] private List<Grill> _listGrill;
     [SerializeField] private List<Sprite> _listSpriteFood;
 
     private float _argFoodInPlate;
+    private int _currentMealFinish = 0;
+    private GameState _gameState;
+    public GameState GameState { get => _gameState; set => _gameState = value; }
 
     private void Start()
     {
         OnInitLevel();
+        ObserverManager<GameEvent>.AddRegisterEvent(GameEvent.OnStartGame, OnPlayerStart);
+        ObserverManager<GameEvent>.AddRegisterEvent(GameEvent.OnDoneGrill, OnMealFinish);
+
+        if (_uiManager != null)
+        {
+            _uiManager.UpdateMealFinishText(_currentMealFinish, TotalMeals);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        ObserverManager<GameEvent>.RemoveAddListener(GameEvent.OnStartGame, OnPlayerStart);
+        ObserverManager<GameEvent>.RemoveAddListener(GameEvent.OnDoneGrill, OnMealFinish);
     }
 
     public void OnInitLevel()
@@ -56,6 +76,9 @@ public class GameManager : Singleton<GameManager>
                 _listGrill[i].OnInitGrill(platePerGrill[i], listFood);
             }
         }
+
+        _gameState = GameState.Waiting;
+        _currentMealFinish = 0;
     }
 
     public List<int> DistributeEvelyn(int totalGrill, int totalPlate)
@@ -89,4 +112,90 @@ public class GameManager : Singleton<GameManager>
         return evelynDistribution;
     }
 
+    private void OnPlayerStart(object param)
+    {
+        GameState = GameState.Playing;
+    }
+
+    private void OnMealFinish(object param)
+    {
+        _currentMealFinish++;
+        if (_uiManager != null)
+        {
+            _uiManager.UpdateMealFinishText(_currentMealFinish, TotalMeals);
+        }
+
+        if (_currentMealFinish >= TotalMeals)
+        {
+            EndGame(true);
+        }
+    }
+
+    public void EndGame(bool isWin)
+    {
+        GameState = isWin ? GameState.Winning : GameState.Losing;
+        if (isWin)
+        {
+            _uiManager.ShowUIWin();
+        }
+        else
+        {
+            _uiManager.ShowUILose();
+        }
+    }
+
+    public bool TryShowHint()
+    {
+        List<Grill> activeGrills = _listGrill.Where(g => g.gameObject.activeSelf).ToList();
+
+        for (int i = 0; i < activeGrills.Count; i++)
+        {
+            Grill sourceGrill = activeGrills[i];
+            if (sourceGrill.IsCompletelyEmpty() || sourceGrill.IsDoneGrill()) continue;
+
+            List<SlotFood> sourceFoods = sourceGrill.GetFilledSlots();
+            foreach (var sFood in sourceFoods)
+            {
+                Sprite foodSprite = sFood.ImageFood.sprite;
+
+                for (int j = 0; j < activeGrills.Count; j++)
+                {
+                    if (i == j) continue;
+                    Grill targetGrill = activeGrills[j];
+
+                    if (targetGrill.IsDoneGrill() || targetGrill.GetSlotNull() == null) continue;
+
+                    if (targetGrill.HasFood(foodSprite))
+                    {
+                        sFood.PlayHintAnimation();
+                        return true;
+                    }
+                }
+            }
+        }
+
+        for (int i = 0; i < activeGrills.Count; i++)
+        {
+            Grill sourceGrill = activeGrills[i];
+            if (sourceGrill.IsCompletelyEmpty() || sourceGrill.IsDoneGrill()) continue;
+
+            if (sourceGrill.GetFilledSlots().All(s => s.ImageFood.sprite == sourceGrill.GetFilledSlots()[0].ImageFood.sprite)) continue;
+
+            List<SlotFood> sourceFoods = sourceGrill.GetFilledSlots();
+            foreach (var sFood in sourceFoods)
+            {
+                for (int j = 0; j < activeGrills.Count; j++)
+                {
+                    if (i == j) continue;
+                    if (activeGrills[j].IsCompletelyEmpty())
+                    {
+                        sFood.PlayHintAnimation();
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
 }

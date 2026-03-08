@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -52,5 +53,30 @@ public class SlotFood : MonoBehaviour
     {
         _imageFood.sprite = null;
         _imageFood.enabled = false;
+    }
+
+    public void PlayHintAnimation()
+    {
+        if (_imageFood == null || !_imageFood.gameObject.activeSelf) return;
+
+        _imageFood.transform.DOKill();
+
+        _imageFood.transform.localScale = Vector3.one;
+        _imageFood.transform.localPosition = Vector3.zero;
+        _imageFood.transform.localRotation = Quaternion.identity;
+
+        Sequence hintSeq = DOTween.Sequence();
+
+        hintSeq.Append(_imageFood.transform.DOScale(new Vector3(1.25f, 1.25f, 1f), 0.15f).SetEase(Ease.OutQuad));
+
+        hintSeq.Append(_imageFood.transform.DOShakeRotation(0.5f, new Vector3(0f, 0f, 25f), 15, 90f, false));
+
+        hintSeq.Append(_imageFood.transform.DOScale(Vector3.one, 0.15f).SetEase(Ease.InQuad));
+
+        hintSeq.OnComplete(() => {
+            _imageFood.transform.localScale = Vector3.one;
+            _imageFood.transform.localRotation = Quaternion.identity;
+            _imageFood.transform.localPosition = Vector3.zero;
+        });
     }
 }
