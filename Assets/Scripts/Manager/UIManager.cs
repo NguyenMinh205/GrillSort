@@ -32,11 +32,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private float _timeToWaitHint = 5f;
     private float _idleTimer = 0f;
 
-    private void Start()
+    private void OnEnable()
     {
-        _timer = _durationTimer;
-        UpdateTimerText();
-
         ObserverManager<GameEvent>.AddRegisterEvent(GameEvent.OnStartGame, OnGameStartTriggered);
         ObserverManager<GameEvent>.AddRegisterEvent(GameEvent.OnPlayerAction, OnPlayerActionResetTimer);
     }
@@ -45,6 +42,13 @@ public class UIManager : MonoBehaviour
     {
         ObserverManager<GameEvent>.RemoveAddListener(GameEvent.OnStartGame, OnGameStartTriggered);
         ObserverManager<GameEvent>.RemoveAddListener(GameEvent.OnPlayerAction, OnPlayerActionResetTimer);
+    }
+
+    public void Init()
+    {
+        _timer = _durationTimer;
+        UpdateTimerText();
+
     }
 
     private void OnGameStartTriggered(object param)
@@ -76,7 +80,7 @@ public class UIManager : MonoBehaviour
         _idleTimer += Time.deltaTime;
         if (_idleTimer >= _timeToWaitHint)
         {
-            _idleTimer = 0f;
+            _idleTimer = _timeToWaitHint/3;
             GameManager.Instance.TryShowHint();
         }
     }

@@ -128,21 +128,18 @@ public class Grill : MonoBehaviour
 
                 moveSeq.Join(foodTrans.DOLocalMove(Vector3.zero, 0.35f).SetEase(Ease.OutQuad));
             }
+            if (_listFoodForPlate.Count > 0)
+            {
+                _plate.OnSetListFood(_listFoodForPlate[0]);
+                _plate.AnimateShowNextFood(0.3f);
+            }
+            else
+            {
+                _plate.OnClearPlate();
+                _plate.gameObject.SetActive(false);
+            }
 
-            moveSeq.OnComplete(() => {
-                if (_listFoodForPlate.Count > 0)
-                {
-                    _plate.OnSetListFood(_listFoodForPlate[0]);
-                    _plate.AnimateShowNextFood(0.3f);
-                }
-                else
-                {
-                    _plate.OnClearPlate();
-                    _plate.gameObject.SetActive(false);
-                }
-
-                OnCheckDoneGrill();
-            });
+            OnCheckDoneGrill();
         }
     }
 

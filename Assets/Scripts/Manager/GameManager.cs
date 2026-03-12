@@ -9,9 +9,10 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private UIManager _uiManager;
     [SerializeField] private AudioManager _audioManager;
 
+    [SerializeField] private int _totalMeal;
     [SerializeField] private int _totalTypeOfFood;
     [SerializeField] private int _totalGrill;
-    public int TotalMeals => _totalTypeOfFood;
+    public int TotalMeals => _totalMeal;
     [SerializeField] private List<Grill> _listGrill;
     [SerializeField] private List<Sprite> _listSpriteFood;
 
@@ -23,6 +24,7 @@ public class GameManager : Singleton<GameManager>
     private void Start()
     {
         OnInitLevel();
+        _uiManager.Init();
         ObserverManager<GameEvent>.AddRegisterEvent(GameEvent.OnStartGame, OnPlayerStart);
         ObserverManager<GameEvent>.AddRegisterEvent(GameEvent.OnDoneGrill, OnMealFinish);
 
@@ -43,11 +45,12 @@ public class GameManager : Singleton<GameManager>
         List<Sprite> takenFood = _listSpriteFood.OrderBy(x => Random.value).Take(_totalTypeOfFood).ToList();
         List<Sprite> usedFood = new List<Sprite>();
 
-        for (int i = 0; i < takenFood.Count; i++)
+        for (int i = 0; i < _totalMeal; i++)
         {
+            int n = i % takenFood.Count;
             for (int j = 0; j < 3; j++)
             {
-                usedFood.Add(takenFood[i]);
+                usedFood.Add(takenFood[n]);
             }
         }
 
@@ -146,53 +149,32 @@ public class GameManager : Singleton<GameManager>
 
     public bool TryShowHint()
     {
-        List<Grill> activeGrills = _listGrill.Where(g => g.gameObject.activeSelf).ToList();
+        List<Grill> activeGrills = _listGrill.Where(g => g.gameObject.activeSelf && !g.IsCompletelyEmpty() && !g.IsDoneGrill()).ToList();
+        Dictionary<Sprite, List<SlotFood>> foodToSlotsMap = new Dictionary<Sprite, List<SlotFood>>();
 
         for (int i = 0; i < activeGrills.Count; i++)
         {
-            Grill sourceGrill = activeGrills[i];
-            if (sourceGrill.IsCompletelyEmpty() || sourceGrill.IsDoneGrill()) continue;
-
-            List<SlotFood> sourceFoods = sourceGrill.GetFilledSlots();
-            foreach (var sFood in sourceFoods)
+            for (int j = 0; j < activeGrills[i].GetFilledSlots().Count; j++)
             {
-                Sprite foodSprite = sFood.ImageFood.sprite;
-
-                for (int j = 0; j < activeGrills.Count; j++)
+                SlotFood slotFood = activeGrills[i].GetFilledSlots()[j];
+                Sprite foodSprite = slotFood.ImageFood.sprite;
+                if (!foodToSlotsMap.ContainsKey(foodSprite))
                 {
-                    if (i == j) continue;
-                    Grill targetGrill = activeGrills[j];
-
-                    if (targetGrill.IsDoneGrill() || targetGrill.GetSlotNull() == null) continue;
-
-                    if (targetGrill.HasFood(foodSprite))
-                    {
-                        sFood.PlayHintAnimation();
-                        return true;
-                    }
+                    foodToSlotsMap[foodSprite] = new List<SlotFood>();
                 }
+                foodToSlotsMap[foodSprite].Add(slotFood);
             }
         }
 
-        for (int i = 0; i < activeGrills.Count; i++)
+        foreach (var typeOfFood in foodToSlotsMap)
         {
-            Grill sourceGrill = activeGrills[i];
-            if (sourceGrill.IsCompletelyEmpty() || sourceGrill.IsDoneGrill()) continue;
-
-            if (sourceGrill.GetFilledSlots().All(s => s.ImageFood.sprite == sourceGrill.GetFilledSlots()[0].ImageFood.sprite)) continue;
-
-            List<SlotFood> sourceFoods = sourceGrill.GetFilledSlots();
-            foreach (var sFood in sourceFoods)
+            if (typeOfFood.Value.Count >= 3)
             {
-                for (int j = 0; j < activeGrills.Count; j++)
+                for (int i = 0; i < 3; i++)
                 {
-                    if (i == j) continue;
-                    if (activeGrills[j].IsCompletelyEmpty())
-                    {
-                        sFood.PlayHintAnimation();
-                        return true;
-                    }
+                    typeOfFood.Value[i].PlayHintAnimation();
                 }
+                return true;
             }
         }
 
