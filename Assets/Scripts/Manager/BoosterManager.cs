@@ -102,84 +102,100 @@ public class BoosterManager : MonoBehaviour
     {
         Sequence seq = DOTween.Sequence();
         int targetIndex = 0;
+
         _imgFoodBag.gameObject.SetActive(true);
         _imgFoodBag.transform.localScale = Vector3.zero;
-        _imgFoodBag.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack);
+        seq.Append(_imgFoodBag.transform.DOScale(Vector3.one, 0.4f).SetEase(Ease.OutBack));
+
+        float startTime = 0.4f;
+        float staggerTime = 0.15f;
 
         foreach (var slot in slots)
         {
-            Image targetImg = _imgMatchingFoods[targetIndex];
-            targetImg.sprite = sprite;
-            targetImg.gameObject.SetActive(true);
+            AnimateFoodToBag(seq, sprite, targetIndex, startTime, slot.ImageFood.transform.position, () => {
+                slot.OnClearSlot();
+            });
 
-            targetImg.transform.position = slot.ImageFood.transform.position;
-            targetImg.transform.localScale = Vector3.one;
-
-            slot.OnClearSlot();
-
-            seq.Join(targetImg.transform.DOLocalMove(_imgFoodBag.transform.position, 0.5f).SetEase(Ease.OutBack));
+            startTime += staggerTime;
             targetIndex++;
         }
 
         foreach (var grill in plates)
         {
-            Image targetImg = _imgMatchingFoods[targetIndex];
-            targetImg.sprite = sprite;
-            targetImg.gameObject.SetActive(true);
-
             int indexToRemove = grill.ListFoodForPlate[0].IndexOf(sprite);
-
             if (indexToRemove != -1)
             {
-                targetImg.transform.position = grill.Plate.GetFoodPosition(indexToRemove);
-                targetImg.transform.localScale = Vector3.one;
+                Vector3 startPos = grill.Plate.GetFoodPosition(indexToRemove);
 
-                grill.ListFoodForPlate[0][indexToRemove] = null;
+                AnimateFoodToBag(seq, sprite, targetIndex, startTime, startPos, () => {
+                    grill.ListFoodForPlate[0][indexToRemove] = null;
+                    bool isPlateEmpty = grill.ListFoodForPlate[0].All(s => s == null);
+
+                    if (isPlateEmpty)
+                    {
+                        grill.ListFoodForPlate.RemoveAt(0);
+                        if (grill.ListFoodForPlate.Count > 0)
+                        {
+                            grill.Plate.OnSetListFood(grill.ListFoodForPlate[0]);
+                            grill.Plate.AnimateShowNextFood(0.3f);
+                        }
+                        else
+                        {
+                            grill.Plate.OnClearPlate();
+                            grill.Plate.gameObject.SetActive(false);
+                        }
+                    }
+                    else
+                    {
+                        grill.Plate.OnSetListFood(grill.ListFoodForPlate[0]);
+                    }
+                });
+
+                startTime += staggerTime;
+                targetIndex++;
             }
-
-            bool isPlateEmpty = grill.ListFoodForPlate[0].All(s => s == null);
-
-            if (isPlateEmpty)
-            {
-                grill.ListFoodForPlate.RemoveAt(0);
-                if (grill.ListFoodForPlate.Count > 0)
-                {
-                    grill.Plate.OnSetListFood(grill.ListFoodForPlate[0]);
-                    grill.Plate.AnimateShowNextFood(0.3f);
-                }
-                else
-                {
-                    grill.Plate.OnClearPlate();
-                    grill.Plate.gameObject.SetActive(false);
-                }
-            }
-            else
-            {
-                grill.Plate.OnSetListFood(grill.ListFoodForPlate[0]);
-            }
-
-            seq.Join(targetImg.transform.DOLocalMove(_imgFoodBag.transform.position, 0.5f).SetEase(Ease.OutBack));
-            targetIndex++;
         }
 
         seq.OnComplete(() => {
-            foreach (var img in _imgMatchingFoods)
-            {
-                img.gameObject.SetActive(false);
-            }
+            _imgFoodBag.transform.DOScale(Vector3.zero, 0.3f).SetEase(Ease.InBack).OnComplete(() => {
+                _imgFoodBag.gameObject.SetActive(false);
 
-            _imgFoodBag.gameObject.SetActive(false);
+                HashSet<Grill> affectedGrills = new HashSet<Grill>();
+                foreach (var slot in slots) affectedGrills.Add(slot.GrillCtrl);
+                foreach (var grill in plates) affectedGrills.Add(grill);
 
-            HashSet<Grill> affectedGrills = new HashSet<Grill>();
-            foreach (var slot in slots) affectedGrills.Add(slot.GrillCtrl);
-            foreach (var grill in plates) affectedGrills.Add(grill);
+                foreach (var grill in affectedGrills)
+                {
+                    grill.OnCheckEmptyGrill();
+                }
 
-            foreach (var grill in affectedGrills)
-            {
-                grill.OnCheckEmptyGrill();
-            }
+                ObserverManager<GameEvent>.PostEvent(GameEvent.OnDoneGrill);
+            });
+        });
+    }
 
-            ObserverManager<GameEvent>.PostEvent(GameEvent.OnDoneGrill);
+    private void AnimateFoodToBag(Sequence seq, Sprite sprite, int targetIndex, float startTime, Vector3 startPos, Action clearDataAction)
+    {
+        Image targetImg = _imgMatchingFoods[targetIndex];
+        targetImg.sprite = sprite;
+        targetImg.gameObject.SetActive(true);
+
+        targetImg.transform.position = startPos;
+        targetImg.transform.localScale = Vector3.one;
+
+        clearDataAction?.Invoke();
+
+        seq.Insert(startTime, targetImg.transform.DOMove(_imgFoodBag.transform.position, 0.4f).SetEase(Ease.InBack));
+
+        seq.Insert(startTime, targetImg.transform.DOScale(Vector3.zero, 0.4f).SetEase(Ease.InBack));
+
+        seq.InsertCallback(startTime + 0.4f, () => {
+            targetImg.gameObject.SetActive(false);
+
+            _imgFoodBag.transform.DOKill(true);
+            _imgFoodBag.transform.localScale = Vector3.one;
+
+            _imgFoodBag.transform.DOPunchScale(new Vector3(0.2f, 0.2f, 0f), 0.2f, 5, 1f);
         });
     }
     #endregion
