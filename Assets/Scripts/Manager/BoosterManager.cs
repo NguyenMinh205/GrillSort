@@ -212,6 +212,6 @@ public class BoosterManager : MonoBehaviour
 
     public void OnExtendTimer()
     {
-
+        GameplayManager.Instance.UIManager.AddExtraTime(60f);
     }
 }

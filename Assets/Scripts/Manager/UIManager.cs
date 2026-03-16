@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class UIManager : MonoBehaviour
 {
@@ -12,18 +13,10 @@ public class UIManager : MonoBehaviour
 
     [Header("Timer")]
     [SerializeField] private TextMeshProUGUI _txtTimer;
-    [SerializeField] private float _durationTimer = 60f;
-    public float DurationTimer
-    {
-        get => _durationTimer;
-        set
-        {
-            _durationTimer = value;
-            UpdateTimerText();
-        }
-    }
+
     private float _timer;
     private bool _isTimerRunning = false;
+    private bool _isAddingTime = false;
 
     [Header("Score")]
     [SerializeField] private TextMeshProUGUI _txtMealFinish;
@@ -32,8 +25,11 @@ public class UIManager : MonoBehaviour
     [SerializeField] private float _timeToWaitHint = 5f;
     private float _idleTimer = 0f;
 
-    private void OnEnable()
+    public void Init(float durationTimer)
     {
+        _timer = durationTimer;
+        UpdateTimerText();
+
         ObserverManager<GameEvent>.AddRegisterEvent(GameEvent.OnStartGame, OnGameStartTriggered);
         ObserverManager<GameEvent>.AddRegisterEvent(GameEvent.OnPlayerAction, OnPlayerActionResetTimer);
     }
@@ -42,13 +38,6 @@ public class UIManager : MonoBehaviour
     {
         ObserverManager<GameEvent>.RemoveAddListener(GameEvent.OnStartGame, OnGameStartTriggered);
         ObserverManager<GameEvent>.RemoveAddListener(GameEvent.OnPlayerAction, OnPlayerActionResetTimer);
-    }
-
-    public void Init()
-    {
-        _timer = _durationTimer;
-        UpdateTimerText();
-
     }
 
     private void OnGameStartTriggered(object param)
@@ -66,13 +55,14 @@ public class UIManager : MonoBehaviour
     {
         if (!_isTimerRunning || GameplayManager.Instance.GameState != GameState.Playing) return;
 
+        if (_isAddingTime) return;
+
         _timer -= Time.deltaTime;
         UpdateTimerText();
 
         if (_timer <= 0)
         {
             _timer = 0;
-            UpdateTimerText();
             _isTimerRunning = false;
             GameplayManager.Instance.EndGame(false);
         }
@@ -80,7 +70,7 @@ public class UIManager : MonoBehaviour
         _idleTimer += Time.deltaTime;
         if (_idleTimer >= _timeToWaitHint)
         {
-            _idleTimer = _timeToWaitHint/3;
+            _idleTimer = 0f;
             GameplayManager.Instance.TryShowHint();
         }
     }
@@ -90,6 +80,24 @@ public class UIManager : MonoBehaviour
         float minutes = Mathf.FloorToInt(_timer / 60);
         float seconds = Mathf.FloorToInt(_timer % 60);
         _txtTimer.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+    }
+
+    public void AddExtraTime(float extraTime)
+    {
+        _isAddingTime = true;
+        float targetTime = _timer + extraTime;
+
+        _txtTimer.transform.DOKill(true);
+        _txtTimer.transform.localScale = Vector3.one;
+
+        _txtTimer.transform.DOPunchScale(new Vector3(0.3f, 0.3f, 0f), 1f, 5, 0.5f);
+        DOTween.To(() => _timer, x =>
+        {
+            _timer = x;
+            UpdateTimerText();
+        }, targetTime, 1f).SetEase(Ease.OutQuad).OnComplete(() => {
+            _isAddingTime = false;
+        });
     }
 
     public void UpdateMealFinishText(int currentMealFinish, int totalMeal)

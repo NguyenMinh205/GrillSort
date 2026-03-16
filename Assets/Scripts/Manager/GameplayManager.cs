@@ -7,12 +7,16 @@ public class GameplayManager : Singleton<GameplayManager>
 {
     [Header("Manager")]
     [SerializeField] private UIManager _uiManager;
+    public UIManager UIManager => _uiManager;
     [SerializeField] private AudioManager _audioManager;
     [SerializeField] private BoosterManager _boosterManager;
 
+    [Header("Stats Level")]
     [SerializeField] private int _totalMeal;
     [SerializeField] private int _totalTypeOfFood;
     [SerializeField] private int _totalGrill;
+    [SerializeField] private float _durationLevel = 180f;
+    public float DurationLevel => _durationLevel;
     public int TotalMeals => _totalMeal;
     [SerializeField] private List<Grill> _listGrill;
     public List<Grill> ListGrill => _listGrill;
@@ -26,7 +30,7 @@ public class GameplayManager : Singleton<GameplayManager>
     private void Start()
     {
         OnInitLevel();
-        _uiManager.Init();
+        _uiManager.Init(_durationLevel);
         ObserverManager<GameEvent>.AddRegisterEvent(GameEvent.OnStartGame, OnPlayerStart);
         ObserverManager<GameEvent>.AddRegisterEvent(GameEvent.OnDoneGrill, OnMealFinish);
 
