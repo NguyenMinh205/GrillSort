@@ -20,12 +20,12 @@ public class DragDropController : MonoBehaviour
             _currentSlot = Utils.GetRayCast<SlotFood>(Input.mousePosition);
             if (_currentSlot != null && !_currentSlot.IsEmpty())
             {
-                if (GameManager.Instance.GameState == GameState.Winning || GameManager.Instance.GameState == GameState.Losing)
+                if (GameplayManager.Instance.GameState == GameState.Winning || GameplayManager.Instance.GameState == GameState.Losing)
                 {
                     return;
                 }
 
-                if (GameManager.Instance.GameState == GameState.Waiting)
+                if (GameplayManager.Instance.GameState == GameState.Waiting)
                 {
                     ObserverManager<GameEvent>.PostEvent(GameEvent.OnStartGame);
                 }

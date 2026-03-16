@@ -7,7 +7,9 @@ public class Grill : MonoBehaviour
 {
     [SerializeField] private List<SlotFood> _slotFoods;
     [SerializeField] private Plate _plate;
+    public Plate Plate => _plate;
     private List<List<Sprite>> _listFoodForPlate;
+    public List<List<Sprite>> ListFoodForPlate => _listFoodForPlate;
 
     public void OnInitGrill(int totalPlate, List<Sprite> listFood)
     {

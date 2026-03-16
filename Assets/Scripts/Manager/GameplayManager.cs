@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class GameManager : Singleton<GameManager>
+public class GameplayManager : Singleton<GameplayManager>
 {
     [Header("Manager")]
     [SerializeField] private UIManager _uiManager;
     [SerializeField] private AudioManager _audioManager;
+    [SerializeField] private BoosterManager _boosterManager;
 
     [SerializeField] private int _totalMeal;
     [SerializeField] private int _totalTypeOfFood;
     [SerializeField] private int _totalGrill;
     public int TotalMeals => _totalMeal;
     [SerializeField] private List<Grill> _listGrill;
+    public List<Grill> ListGrill => _listGrill;
     [SerializeField] private List<Sprite> _listSpriteFood;
 
     private float _argFoodInPlate;

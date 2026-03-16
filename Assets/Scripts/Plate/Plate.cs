@@ -19,7 +19,6 @@ public class Plate : MonoBehaviour
 
         if (listFood.Count > _listFood.Count)
         {
-            Debug.LogError("List food count does not match the number of food images on the plate.");
             return;
         }
 
@@ -28,6 +27,11 @@ public class Plate : MonoBehaviour
             _listFood[i].sprite = listFood[i];
             _listFood[i].gameObject.SetActive(true);
         }
+    }
+
+    public void OnClearFoodOnPlate()
+    {
+
     }
 
     public void OnClearPlate()

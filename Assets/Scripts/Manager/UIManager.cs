@@ -64,7 +64,7 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
-        if (!_isTimerRunning || GameManager.Instance.GameState != GameState.Playing) return;
+        if (!_isTimerRunning || GameplayManager.Instance.GameState != GameState.Playing) return;
 
         _timer -= Time.deltaTime;
         UpdateTimerText();
@@ -74,14 +74,14 @@ public class UIManager : MonoBehaviour
             _timer = 0;
             UpdateTimerText();
             _isTimerRunning = false;
-            GameManager.Instance.EndGame(false);
+            GameplayManager.Instance.EndGame(false);
         }
 
         _idleTimer += Time.deltaTime;
         if (_idleTimer >= _timeToWaitHint)
         {
             _idleTimer = _timeToWaitHint/3;
-            GameManager.Instance.TryShowHint();
+            GameplayManager.Instance.TryShowHint();
         }
     }
 
