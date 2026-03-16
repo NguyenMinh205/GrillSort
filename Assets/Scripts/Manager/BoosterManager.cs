@@ -34,6 +34,8 @@ public class BoosterManager : MonoBehaviour
             {
                 foreach (var s in grill.ListFoodForPlate[0])
                 {
+                    if (s == null) continue;
+
                     if (!foodsInPlate.ContainsKey(s)) foodsInPlate[s] = new List<Grill>();
                     foodsInPlate[s].Add(grill);
                 }
@@ -93,7 +95,7 @@ public class BoosterManager : MonoBehaviour
         else
         {
             Debug.Log("Không tìm thấy bộ 3 món ăn nào để thu thập!");
-        }    
+        }
     }
 
     public void PlayCollectMatchingFoodAnimation(Sprite sprite, List<SlotFood> slots, List<Grill> plates)
@@ -125,12 +127,19 @@ public class BoosterManager : MonoBehaviour
             targetImg.sprite = sprite;
             targetImg.gameObject.SetActive(true);
 
-            targetImg.transform.position = grill.Plate.transform.position;
-            targetImg.transform.localScale = Vector3.one;
+            int indexToRemove = grill.ListFoodForPlate[0].IndexOf(sprite);
 
-            grill.ListFoodForPlate[0].Remove(sprite);
+            if (indexToRemove != -1)
+            {
+                targetImg.transform.position = grill.Plate.GetFoodPosition(indexToRemove);
+                targetImg.transform.localScale = Vector3.one;
 
-            if (grill.ListFoodForPlate[0].Count == 0)
+                grill.ListFoodForPlate[0][indexToRemove] = null;
+            }
+
+            bool isPlateEmpty = grill.ListFoodForPlate[0].All(s => s == null);
+
+            if (isPlateEmpty)
             {
                 grill.ListFoodForPlate.RemoveAt(0);
                 if (grill.ListFoodForPlate.Count > 0)

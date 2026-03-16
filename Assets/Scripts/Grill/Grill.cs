@@ -25,9 +25,12 @@ public class Grill : MonoBehaviour
 
         for (int i = 0; i < totalPlate - 1; i++)
         {
-            _listFoodForPlate.Add(new List<Sprite>());
+            _listFoodForPlate.Add(new List<Sprite> { null, null, null });
+
             int foodIndex = Random.Range(0, listFood.Count);
-            _listFoodForPlate[i].Add(listFood[foodIndex]);
+            int randomSlotIndex = Random.Range(0, 3);
+
+            _listFoodForPlate[i][randomSlotIndex] = listFood[foodIndex];
             listFood.RemoveAt(foodIndex);
         }
 
@@ -36,7 +39,7 @@ public class Grill : MonoBehaviour
             List<int> availablePlates = new List<int>();
             for (int i = 0; i < _listFoodForPlate.Count; i++)
             {
-                if (_listFoodForPlate[i].Count < 3)
+                if (_listFoodForPlate[i].Contains(null))
                 {
                     availablePlates.Add(i);
                 }
@@ -47,11 +50,18 @@ public class Grill : MonoBehaviour
                 break;
             }
 
-            int randomAvailableIndex = Random.Range(0, availablePlates.Count);
-            int targetPlateIndex = availablePlates[randomAvailableIndex];
+            int targetPlateIndex = availablePlates[Random.Range(0, availablePlates.Count)];
 
+            List<int> emptySlots = new List<int>();
+            for (int j = 0; j < 3; j++)
+            {
+                if (_listFoodForPlate[targetPlateIndex][j] == null) emptySlots.Add(j);
+            }
+
+            int targetSlotIndex = emptySlots[Random.Range(0, emptySlots.Count)];
             int randomFoodIndex = Random.Range(0, listFood.Count);
-            _listFoodForPlate[targetPlateIndex].Add(listFood[randomFoodIndex]);
+
+            _listFoodForPlate[targetPlateIndex][targetSlotIndex] = listFood[randomFoodIndex];
             listFood.RemoveAt(randomFoodIndex);
         }
 
@@ -123,6 +133,7 @@ public class Grill : MonoBehaviour
 
             for (int i = 0; i < nextFood.Count; i++)
             {
+                if (nextFood[i] == null) continue;
                 _slotFoods[i].OnSetFood(nextFood[i]);
                 Transform foodTrans = _slotFoods[i].ImageFood.transform;
 

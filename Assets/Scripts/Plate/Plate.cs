@@ -24,14 +24,17 @@ public class Plate : MonoBehaviour
 
         for (int i = 0; i < listFood.Count; i++)
         {
-            _listFood[i].sprite = listFood[i];
-            _listFood[i].gameObject.SetActive(true);
+            if (listFood[i] != null)
+            {
+                _listFood[i].sprite = listFood[i];
+                _listFood[i].gameObject.SetActive(true);
+            }
+            else
+            {
+                _listFood[i].gameObject.SetActive(false);
+                _listFood[i].sprite = null;
+            }
         }
-    }
-
-    public void OnClearFoodOnPlate()
-    {
-
     }
 
     public void OnClearPlate()
