@@ -200,18 +200,130 @@ public class BoosterManager : MonoBehaviour
     }
     #endregion
 
-    public void OnSwapItems()
+    #region Swap Food Booster
+    public void OnSwapFoods()
     {
+        List<Grill> activeGrills = GameplayManager.Instance.ListGrill.Where(g => g.gameObject.activeSelf).ToList();
 
+        List<SlotFood> allFilledSlots = new List<SlotFood>();
+        List<Sprite> tempGrillFoods = new List<Sprite>();
+
+        List<Action<Sprite>> plateSetters = new List<Action<Sprite>>();
+        List<Sprite> tempPlateFoods = new List<Sprite>();
+
+        foreach (var grill in activeGrills)
+        {
+            foreach (var slot in grill.GetFilledSlots())
+            {
+                allFilledSlots.Add(slot);
+                tempGrillFoods.Add(slot.ImageFood.sprite);
+            }
+
+            if (grill.ListFoodForPlate != null)
+            {
+                for (int i = 0; i < grill.ListFoodForPlate.Count; i++)
+                {
+                    for (int j = 0; j < grill.ListFoodForPlate[i].Count; j++)
+                    {
+                        Sprite s = grill.ListFoodForPlate[i][j];
+                        if (s != null)
+                        {
+                            tempPlateFoods.Add(s);
+
+                            int listIndex = i;
+                            int slotIndex = j;
+                            Grill g = grill;
+                            plateSetters.Add((newSprite) => {
+                                g.ListFoodForPlate[listIndex][slotIndex] = newSprite;
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
+        tempGrillFoods = tempGrillFoods.OrderBy(x => UnityEngine.Random.value).ToList();
+        tempPlateFoods = tempPlateFoods.OrderBy(x => UnityEngine.Random.value).ToList();
+
+        Sequence seq = DOTween.Sequence();
+        float duration = 0.3f;
+
+        foreach (var slot in allFilledSlots)
+        {
+            seq.Join(slot.ImageFood.transform.DOScale(Vector3.zero, duration).SetEase(Ease.InBack));
+        }
+
+        foreach (var grill in activeGrills)
+        {
+            if (grill.ListFoodForPlate != null && grill.ListFoodForPlate.Count > 0)
+            {
+                seq.Join(grill.Plate.HideCurrentFoodsAnimation(duration));
+            }
+        }
+
+        seq.OnComplete(() => {
+            for (int i = 0; i < allFilledSlots.Count; i++)
+            {
+                allFilledSlots[i].OnSetFood(tempGrillFoods[i]);
+                allFilledSlots[i].ImageFood.transform.localScale = Vector3.zero;
+            }
+
+            for (int i = 0; i < plateSetters.Count; i++)
+            {
+                plateSetters[i].Invoke(tempPlateFoods[i]);
+            }
+
+            Sequence seqUp = DOTween.Sequence();
+
+            foreach (var slot in allFilledSlots)
+            {
+                seqUp.Join(slot.ImageFood.transform.DOScale(Vector3.one, duration).SetEase(Ease.OutBack));
+            }
+
+            foreach (var grill in activeGrills)
+            {
+                if (grill.ListFoodForPlate != null && grill.ListFoodForPlate.Count > 0)
+                {
+                    grill.Plate.OnSetListFood(grill.ListFoodForPlate[0]);
+                    seqUp.Join(grill.Plate.ShowCurrentFoodsAnimation(duration));
+                }
+            }
+
+            seqUp.OnComplete(() => {
+                foreach (var grill in activeGrills)
+                {
+                    grill.OnCheckDoneGrill();
+                }
+            });
+        });
     }
+    #endregion
 
+    #region Unlock New Grill Booster
     public void OnUnlockNewGrill()
     {
-
+        Grill unActiveGrills = GameplayManager.Instance.ListGrill.FirstOrDefault(g => !g.gameObject.activeSelf);
+        if (unActiveGrills != null)
+        {
+            OnAddGrill(unActiveGrills);
+            return;
+        }
+        Debug.Log("Không còn bếp nào để mở khóa!");
     }
 
+    public void OnAddGrill(Grill grillToAdd)
+    {
+        grillToAdd.gameObject.SetActive(true);
+        grillToAdd.Plate.gameObject.SetActive(false);
+        grillToAdd.gameObject.transform.localScale = Vector3.zero;
+        grillToAdd.gameObject.transform.DOScale(Vector3.one, 0.5f).SetEase(Ease.OutBack);
+    }
+    #endregion
+
+    #region Add Extend Booster 
     public void OnExtendTimer()
     {
         GameplayManager.Instance.UIManager.AddExtraTime(60f);
     }
+    #endregion
 }

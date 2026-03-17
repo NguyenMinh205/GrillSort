@@ -53,6 +53,33 @@ public class Plate : MonoBehaviour
         return transform.position;
     }
 
+    public Sequence HideCurrentFoodsAnimation(float duration)
+    {
+        Sequence seq = DOTween.Sequence();
+        foreach (var img in _listFood)
+        {
+            if (img.gameObject.activeSelf)
+            {
+                seq.Join(img.transform.DOScale(Vector3.zero, duration).SetEase(Ease.InBack));
+            }
+        }
+        return seq;
+    }
+
+    public Sequence ShowCurrentFoodsAnimation(float duration)
+    {
+        Sequence seq = DOTween.Sequence();
+        foreach (var img in _listFood)
+        {
+            if (img.gameObject.activeSelf)
+            {
+                img.transform.localScale = Vector3.zero;
+                seq.Join(img.transform.DOScale(Vector3.one, duration).SetEase(Ease.OutBack));
+            }
+        }
+        return seq;
+    }
+
     public void AnimateShowNextFood(float duration)
     {
         foreach (var img in _listFood)
