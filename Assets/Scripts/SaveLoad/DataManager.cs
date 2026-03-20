@@ -1,0 +1,142 @@
+﻿using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class DataManager : Singleton<DataManager>
+{
+    public SecureGameData GameData { get; private set; }
+
+    protected override void Awake()
+    {
+        base.KeepActive(true);
+        base.Awake();
+        GameData = new SecureGameData();
+        GameData.Load();
+    }
+
+    private void OnApplicationQuit()
+    {
+        GameData.Save();
+    }
+}
+
+[System.Serializable]
+public class SecureGameData
+{
+    // START DATA
+    [SerializeField] private float _musicVolume = 0.5f;
+    [SerializeField] private float _soundVolume = 0.5f;
+
+    //Score
+    [SerializeField] private int _colorBlockHighScore = 0;
+    [SerializeField] private int _dotRescueHighScore = 0;
+    [SerializeField] private int _fruitMergeHighScore = 0;
+    [SerializeField] private int _numberSlideHighScore = 0;
+    [SerializeField] private int _tetrisHighScore = 0;
+
+    #region CONST
+    private const float DEFAULT_MUSIC_VOLUME = 0.5f;
+    private const float DEFAULT_SOUND_VOLUME = 0.5f;
+    private const int DEFAULT_COLOR_BLOCK_HIGH_SCORE = 0;
+    private const int DEFAULT_DOTRESCUE_HIGH_SCORE = 0;
+    private const int DEFAULT_FRUIT_MERGE_HIGH_SCORE = 0;
+    private const int DEFAULT_NUMBER_SLIDE_HIGH_SCORE = 0;
+    private const int DEFAULT_TETRIS_HIGH_SCORE = 0;
+    #endregion
+
+    #region PROPERTIES
+    public float MusicVolume
+    {
+        get { return _musicVolume; } 
+        set { _musicVolume = value; }
+    }
+
+    public float SoundVolume
+    {
+        get { return _soundVolume; }
+        set { _soundVolume = value; }
+    }
+
+    public int ColorBlockHighScore
+    {
+        get { return _colorBlockHighScore; }
+        set { _colorBlockHighScore = value; }
+    }
+
+    public int DotRescueHighScore
+    {
+        get { return _dotRescueHighScore; }
+        set { _dotRescueHighScore = value; }
+    }
+
+    public int FruitMergeHighScore
+    {
+        get { return _fruitMergeHighScore; }
+        set { _fruitMergeHighScore = value; }
+    }
+
+    public int NumberSlideHighScore
+    {
+        get { return _numberSlideHighScore; }
+        set { _numberSlideHighScore = value; }
+    }
+
+    public int TetrisHighScore
+    {
+        get { return _tetrisHighScore; }
+        set { _tetrisHighScore = value; }
+    }
+
+    #endregion
+
+    #region SAVE/LOAD
+
+    private const eData SaveFileKey = eData.SecureGameData;
+
+    public void Save()
+    {
+        var saveUtil = new SaveUtility<SecureGameData>();
+        saveUtil.SaveData(SaveFileKey, this);
+    }
+
+    public void Load()
+    {
+        var saveUtil = new SaveUtility<SecureGameData>();
+        SecureGameData loadedData = new SecureGameData();
+        saveUtil.LoadData(SaveFileKey, ref loadedData);
+        CopyFrom(loadedData);
+    }
+
+    private void CopyFrom(SecureGameData other)
+    {
+        if (other == null) return;
+
+        this._musicVolume = other._musicVolume;
+        this._soundVolume = other._soundVolume;
+
+        this._colorBlockHighScore = other._colorBlockHighScore;
+        this._dotRescueHighScore = other._dotRescueHighScore;
+        this._fruitMergeHighScore = other._fruitMergeHighScore;
+        this._numberSlideHighScore = other._numberSlideHighScore;
+        this._tetrisHighScore = other._tetrisHighScore;
+    }
+
+    public void ClearAllData()
+      {
+          SaveGameManager.DeleteSave(SaveFileKey);
+          Reset();
+      }
+
+    private void Reset()
+    {
+        _musicVolume = DEFAULT_MUSIC_VOLUME;
+        _soundVolume = DEFAULT_SOUND_VOLUME;
+        _colorBlockHighScore = DEFAULT_COLOR_BLOCK_HIGH_SCORE;
+        _dotRescueHighScore = DEFAULT_DOTRESCUE_HIGH_SCORE;
+        _fruitMergeHighScore = DEFAULT_FRUIT_MERGE_HIGH_SCORE;
+        _numberSlideHighScore = DEFAULT_NUMBER_SLIDE_HIGH_SCORE;
+        _tetrisHighScore = DEFAULT_TETRIS_HIGH_SCORE;
+    }
+
+    #endregion
+}
