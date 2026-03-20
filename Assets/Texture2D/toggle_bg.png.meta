@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 5cde4db6622d6e14cbf6c34edba35fba
+guid: 360a9ac2a5998a2429df049399159366
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -34,7 +34,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -43,7 +43,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -121,7 +121,49 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: toggle_bg_0
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 1000
+        width: 1777
+        height: 749
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a50c7fde16d4bb4bafb6fbc450a5657
+      internalID: 73762134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: toggle_bg_1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1784
+        height: 747
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 42e9e4290ef9e824cbd5c37bcbcf605d
+      internalID: -2023003004
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -132,7 +174,9 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      toggle_bg_0: 73762134
+      toggle_bg_1: -2023003004
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

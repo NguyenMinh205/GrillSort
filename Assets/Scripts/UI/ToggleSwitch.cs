@@ -1,87 +1,83 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
+using DG.Tweening;
 
 public class ToggleSwitch : MonoBehaviour, IPointerClickHandler
 {
     [Header("Slider Value")]
     [SerializeField] private Slider _slider;
-    [SerializeField, Range(0,1)] private float _sliderValue = 0;
 
     public bool CurrentValue { get; private set; }
 
+    [Header("Visuals")]
+    [SerializeField] private Image _backgroundImage;
+    [SerializeField] private Sprite _toggleOnSprite;
+    [SerializeField] private Sprite _toggleOffSprite;
+
     [Header("Animations")]
-    [SerializeField] private float _animationDuration = 0.5f;
-    [SerializeField] private AnimationCurve _sliderAnimationCurve = AnimationCurve.EaseInOut(0,0,1,1);
-    private Coroutine _sliderCoroutine;
+    [SerializeField] private float _animationDuration = 0.25f;
+    [SerializeField] private Ease _animationEase = Ease.InOutQuad;
 
     [Header("Events")]
     public UnityEvent OnToggleOn;
     public UnityEvent OnToggleOff;
 
-    public void OnValidate()
+    private void Start()
     {
-        SetUpToggle();
-
-        if (_slider != null)
-        {
-            _slider.value = _sliderValue;
-        }
+        UpdateVisuals(false);
     }
+
     public void OnPointerClick(PointerEventData eventData)
     {
         Toggle();
     }
-    public void SetUpToggle()
-    {
-        _slider.interactable = false;
-        var sliderColors = _slider.colors;
-        sliderColors.disabledColor = Color.white;
-        _slider.colors = sliderColors;
-        _slider.transition = Selectable.Transition.None;
-    }
 
     public void Toggle()
     {
-        if (_sliderCoroutine != null)
-        {
-            StopCoroutine(_sliderCoroutine);
-        }
-
         SetStateAndStartAnimation(!CurrentValue);
-    }    
+    }
 
     public void SetStateAndStartAnimation(bool state)
     {
+        if (CurrentValue == state) return;
+
         CurrentValue = state;
 
-        if (CurrentValue)
+        float targetValue = CurrentValue ? 1f : 0f;
+        _slider.DOKill();
+        _slider.DOValue(targetValue, _animationDuration).SetEase(_animationEase);
+
+        _backgroundImage.DOKill();
+
+        _backgroundImage.sprite = CurrentValue ? _toggleOnSprite : _toggleOffSprite;
+
+        if (CurrentValue) OnToggleOn?.Invoke();
+        else OnToggleOff?.Invoke();
+    }
+
+    private void UpdateVisuals(bool animate)
+    {
+        float targetValue = CurrentValue ? 1f : 0f;
+        _backgroundImage.sprite = CurrentValue ? _toggleOnSprite : _toggleOffSprite;
+
+        if (animate)
         {
-            OnToggleOn?.Invoke();
+            _slider.DOValue(targetValue, _animationDuration);
         }
         else
         {
-            OnToggleOff.Invoke();
+            _slider.value = targetValue;
         }
-
-        _sliderCoroutine = StartCoroutine(AnimateSlider());
     }
 
-    private IEnumerator AnimateSlider()
+    public void OnValidate()
     {
-        float elapsedTime = 0;
-        float startValue = _slider.value;
-        float targetValue = CurrentValue ? 1 : 0;
-        while (elapsedTime < _animationDuration)
+        if (_slider != null)
         {
-            elapsedTime += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsedTime / _animationDuration);
-            _slider.value = Mathf.Lerp(startValue, targetValue, _sliderAnimationCurve.Evaluate(t));
-            yield return null;
+            _slider.interactable = false;
+            _slider.transition = Selectable.Transition.None;
         }
-        _slider.value = targetValue;
     }
 }
